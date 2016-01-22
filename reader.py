@@ -39,9 +39,6 @@ def build_cuisines(recipies):
          cuisines[r.name] = r.ingr
       else:
          cuisines[r.name].extend(r.ingr)
-
-# Sets up the training and testing lists
-tr = init_train("train.json", 'train')
-te = init_train("test.json", 'test')
-build_cuisines(tr)
+      cuisines[r.name] = list(set(cuisines[r.name]))
+   return cuisines
 
