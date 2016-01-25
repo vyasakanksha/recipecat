@@ -1,29 +1,32 @@
-from reader import init_train, build_cuisines, recipe
-from predictor import slow_predictor
+from reader import init_data, build_cuisines, recipe
+from predictor import slow_predictor, predictor
 from visualizer import setup_graph, display
-import time
+import time, csv
 
 # Sets up the training and testing lists
 start_time = time.time()
-tr = init_train("train.json", 'train')
-print("--- %s seconds ---" % (time.time() - start_time))
+training_set = init_data("train.json", 'train')
+testing_set = init_data("test.json", 'test')
+print("Reading Input in --- %s seconds ---" % (time.time() - start_time))
+
 start_time = time.time()
-te = init_train("test.json", 'test')
-print("--- %s seconds ---" % (time.time() - start_time))
+c, i = build_cuisines(training_set)
+print("Building cuisine and ingredient lists in --- %s seconds ---" % (time.time() - start_time))
+
 start_time = time.time()
-c = build_cuisines(tr)
-print("--- %s seconds ---" % (time.time() - start_time))
+solution = slow_predictor(testing_set, c)
+#solution = predictor(tesing_set, training_set, i)
+print("Predicting cuisines for the test set in --- %s seconds ---" % (time.time() - start_time))
 
-#start_time = time.time()
-#slow_predictor(te, c)
+with open('submission.csv', 'w') as fp:
+    a = csv.writer(fp, delimiter=',')
+    a.writerows(solution)
 
-#for t in te:
-#   print t.idf, t.name
-#print("--- %s seconds ---" % (time.time() - start_time))
-
+start_time = time.time()
 data_lst = []
 for i, k in c.items():
    ntrace = setup_graph(k, i)
    data_lst.append(ntrace)
 
 display(data_lst)
+print("Visualizing cuisines for the test set in --- %s seconds ---" % (time.time() - start_time))

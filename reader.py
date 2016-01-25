@@ -8,7 +8,7 @@ class recipe(object):
       self.ingr = r_ingr
 
 # reads the recipies and creates training and testing sets
-def init_train(fn, indicator):
+def init_data(fn, dataset):
    train = []
    test = [] 
 
@@ -21,12 +21,12 @@ def init_train(fn, indicator):
    with f:
       data = json.loads(f.read())
   
-   if indicator is 'train':
+   if dataset is 'train':
       for d in data:
          train.append(recipe(d['id'], d['cuisine'], d['ingredients']))
       return train 
    
-   if indicator is 'test':
+   if dataset is 'test':
       for d in data:
          test.append(recipe(d['id'], None, d['ingredients']))
       return test
@@ -34,11 +34,16 @@ def init_train(fn, indicator):
 # Compiles all the ingredients of each cuisine
 def build_cuisines(recipies):
    cuisines = {}
+   ingredients = []
    for r in recipies:
+      ingredients.extend(r.ingr)
       if r.name not in cuisines:
          cuisines[r.name] = r.ingr
       else:
          cuisines[r.name].extend(r.ingr)
       cuisines[r.name] = list(set(cuisines[r.name]))
-   return cuisines
+
+   ingredients = list(set(ingredients))
+      
+   return cuisines, ingredients
 
